@@ -5,7 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <!-- Динамическое название вкладки браузера -->
+        <title>@isset($title) {{ $title }} | @endisset {{ config('app.name', 'КиноКаталог') }}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -18,20 +19,20 @@
         <div class="min-h-screen bg-gray-900 text-gray-100">
             @include('layouts.navigation')
 
-            <!-- Page Heading -->
-            @isset($header)
+            @hasSection('header')
                 <header class="bg-gray-800 shadow border-b border-gray-700">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+                        <h2 class="font-semibold text-xl text-white leading-tight">
+                            @yield('header')
+                        </h2>
                     </div>
                 </header>
-            @endisset
+            @endif
 
-            <!-- Page Content -->
+            <!-- Основной контент, который передают другие файлы -->
             <main>
-                {{ $slot }}
+                @yield('content')
             </main>
         </div>
     </body>
 </html>
-

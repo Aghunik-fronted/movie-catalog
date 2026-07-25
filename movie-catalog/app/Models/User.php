@@ -3,19 +3,37 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder; // ДОБАВЛЕН ИМПОРТ ДЛЯ ТИПИЗАЦИИ SCOPE
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 
     /**
      * Get the attributes that should be cast.
@@ -30,8 +48,19 @@ class User extends Authenticatable
         ];
     }
 
-    public function reviews()
+    /**
+     * Связь «многие ко многим» с фильмами через таблицу избранного
+     */
+    public function favoriteMovies(): BelongsToMany
     {
-        return $this->hasMany(Review::class);
+        return $this->belongsToMany(Movie::class, 'favorites');
+    }
+
+    /**
+     * Scope: Поиск пользователей по имени
+     */
+    public function scopeByName(Builder $query, string $name): Builder
+    {
+        return $query->where('name', 'like', "%{$name}%");
     }
 }

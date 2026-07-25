@@ -2,7 +2,7 @@
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <div class="flex">
+            <div class="flex flex-1">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
@@ -11,11 +11,43 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <!-- ИСПРАВЛЕНО: Ссылка «Фильмы» теперь всегда ярко-белая и заметная -->
-                    <x-nav-link :href="route('movies.index')" :active="request()->routeIs('movies.*')" class="text-white hover:text-gray-200 font-semibold focus:text-white">
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex sm:items-center">
+                    <!-- Ссылка «Фильмы» -->
+                    <x-nav-link :href="route('movies.index')" :active="request()->routeIs('movies.index')" class="text-white hover:text-gray-200 font-semibold focus:text-white h-16 flex items-center">
                         <span class="text-white">{{ __('Фильмы') }}</span>
                     </x-nav-link>
+
+                    <!-- Ссылка на Избранное для авторизованных пользователей -->
+                    @auth
+                        <x-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')" class="text-white hover:text-gray-200 font-semibold focus:text-white h-16 flex items-center">
+                            <span class="text-white">{{ __('❤️ Избранное') }}</span>
+                        </x-nav-link>
+                    @endauth
+                </div>
+
+                <!-- Поле НАЙТИ (Между ссылками и аккаунтом) -->
+                <div class="hidden sm:flex sm:items-center flex-1 max-w-xs ms-6">
+                    <form action="{{ route('movies.index') }}" method="GET" class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://w3.org">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        <input 
+                            type="search" 
+                            name="search" 
+                            value="{{ request('search') }}"
+                            placeholder="Найти фильм..." 
+                            class="block w-full pl-10 pr-8 py-1.5 text-sm text-gray-200 bg-gray-700 border border-gray-600 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 focus:outline-none transition duration-150 ease-in-out"
+                        >
+                        @if(request('search'))
+                            <a href="{{ route('movies.index') }}" class="absolute inset-y-0 right-0 flex items-center pr-2.5 text-gray-400 hover:text-gray-200" title="Очистить поиск">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://w3.org">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </a>
+                        @endif
+                    </form>
                 </div>
             </div>
 
@@ -59,7 +91,7 @@
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
                 <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-300 hover:bg-gray-700 focus:outline-none focus:bg-gray-700 focus:text-gray-300 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" xmlns="http://w3.org">
                         <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -68,14 +100,39 @@
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
+    <!-- Responsive Navigation Menu (Мобильное меню) -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('movies.index')" :active="request()->routeIs('movies.*')">
+            <x-responsive-nav-link :href="route('movies.index')" :active="request()->routeIs('movies.index')">
                 {{ __('Фильмы') }}
             </x-responsive-nav-link>
+
+            @auth
+                <x-responsive-nav-link :href="route('favorites.index')" :active="request()->routeIs('favorites.index')">
+                    {{ __('❤️ Избранное') }}
+                </x-responsive-nav-link>
+            @endauth
+            
+            <!-- Мобильное поле поиска -->
+            <div class="px-4 py-2">
+                <form action="{{ route('movies.index') }}" method="GET" class="relative w-full">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://w3.org">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input 
+                        type="search" 
+                        name="search" 
+                        value="{{ request('search') }}"
+                        placeholder="Найти фильм..." 
+                        class="block w-full pl-10 pr-4 py-2 text-sm text-gray-200 bg-gray-700 border border-gray-600 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 placeholder-gray-400 focus:outline-none"
+                    >
+                </form>
+            </div>
         </div>
 
+        <!-- Информация об аккаунте и ссылки (Мобильные) -->
         <div class="pt-4 pb-1 border-t border-gray-700 bg-gray-800">
             <div class="px-4">
                 <div class="font-medium text-base text-white">{{ Auth::user()?->name ?? 'Гость' }}</div>
@@ -105,3 +162,4 @@
         </div>
     </div>
 </nav>
+

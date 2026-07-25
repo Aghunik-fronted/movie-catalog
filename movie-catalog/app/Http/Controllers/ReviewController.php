@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Auth;
 
 class ReviewController extends Controller
 {
+    /**
+     * Сохранение нового отзыва в базе данных.
+     */
     public function store(Request $request, Movie $movie)
     {
         $validated = $request->validate([
@@ -16,7 +19,7 @@ class ReviewController extends Controller
             'content' => 'required|string|min:5',
         ]);
 
-         Review::create([
+        Review::create([
             'user_id' => Auth::id(),
             'movie_id' => $movie->id,
             'rating' => $validated['rating'],
@@ -24,5 +27,17 @@ class ReviewController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Отзыв успешно добавлен!');
+    }
+
+    public function destroy(Review $review)
+    {
+        // Проверяем на бэкенде, что отзыв удаляет именно тот, кто его написал
+        if (Auth::id() !== $review->user_id) {
+            return redirect()->back()->with('error', 'Вы не можете удалить чужой отзыв!');
+        }
+
+        $review->delete();
+
+        return redirect()->back()->with('success', 'Отзыв и оценка успешно удалены!');
     }
 }
