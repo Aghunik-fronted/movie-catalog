@@ -4,35 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // Импортируем фасад Auth
 
 class MovieController extends Controller
 {
     /**
-     * Вывод списка фильмов (с поддержкой поиска и пагинации).
+     * Список всех фильмов с поиском и пагинацией.
      */
     public function index(Request $request)
     {
-        // Базовый запрос с ленивой загрузкой отзывов
-        $movies = Movie::with('reviews')
-            // Условие выполнится, только если в GET-запросе передан непустой параметр 'search'
-            ->when($request->filled('search'), function ($query) use ($request) {
-                $searchTerm = $request->input('search');
-                
-                // Группируем условия WHERE во избежание конфликтов приоритетов SQL
-                return $query->where(function ($q) use ($searchTerm) {
-                    $q->where('title', 'like', "%{$searchTerm}%")
-                      ->orWhere('description', 'like', "%{$searchTerm}%");
-                });
-            })
-            ->latest() // Сортировка: сначала новые поступления
-            ->paginate(12) // Постраничный вывод по 12 элементов
-            ->withQueryString(); // Сохраняет параметр поиска при переходе по страницам пагинации
+        $query = Movie::with('reviews')->latestFirst();
+
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+        }
+
+        $movies = $query->paginate(6);
 
         return view('movies.index', compact('movies'));
     }
 
     /**
-     * Отображение конкретного фильма.
+     * Показ детальной страницы конкретного фильма с отзывами.
      */
     public function show(Movie $movie)
     {
@@ -40,24 +35,27 @@ class MovieController extends Controller
         return view('movies.show', compact('movie'));
     }
 
-        public function create()
+    /**
+     * Форма создания нового фильма.
+     */
+    public function create()
     {
-        // Показ формы создания фильма
         return view('movies.create');
     }
 
+    /**
+     * Сохранение нового фильма в базу данных.
+     */
     public function store(Request $request)
     {
-        // Валидация входных данных формы
         $validated = $request->validate([
             'title' => 'required|string|max:255|unique:movies,title',
             'description' => 'required|string|min:10',
             'poster_file' => 'nullable|image|mimes:webp,jpeg,jpg,png|max:2048'
         ]);
 
-        $posterPath = 'posters/interstellar.webp'; // дефолтный постер, если не загружен свой
+        $posterPath = 'posters/interstellar.webp';
 
-        // Если загружен файл обложки, сохраняем его в public/posters
         if ($request->hasFile('poster_file')) {
             $file = $request->file('poster_file');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -65,13 +63,31 @@ class MovieController extends Controller
             $posterPath = 'posters/' . $filename;
         }
 
-        // Создаем запись в базе данных
         Movie::create([
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'poster' => $posterPath
+            'poster' => $posterPath,
+            'user_id' => Auth::user() ? Auth::user()->id : null
         ]);
 
-        return redirect()->route('movies.index')->with('success', 'Новый фильм успешно добавлен в кинотеатр!');
+        return redirect()->route('movies.index')->with('success', 'Новый фильм успешно добавлен в каталог!');
+    }
+
+    /**
+     * Удаление фильма автором или администратором.
+     */
+    public function destroy(Movie $movie)
+    {
+        if (!Auth::check() || (!Auth::user()->is_admin && Auth::user()->id !== $movie->user_id)) {
+            abort(403, 'Доступ запрещен! Вы можете удалять только свои фильмы.');
+        }
+
+        if ($movie->poster && $movie->poster !== 'posters/interstellar.webp' && file_exists(public_path($movie->poster))) {
+            unlink(public_path($movie->poster));
+        }
+
+        $movie->delete();
+
+        return redirect()->route('movies.index')->with('success', 'Фильм успешно удален из каталога!');
     }
 }

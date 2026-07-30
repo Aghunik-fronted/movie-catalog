@@ -13,6 +13,14 @@ class MovieSeeder extends Seeder
      */
     public function run(): void
     {
+        \App\Models\User::updateOrCreate(
+            ['email' => 'admin@mail.ru'],
+            [
+                'name' => 'Aghunik (Admin)',
+                'password' => bcrypt('admin123'),
+                'is_admin' => true
+            ]
+        );
         Movie::create([
             'title' => 'Интерстеллар',
             'description' => 'Когда наше время на Земле подходит к концу, команда исследователей отправляется в самую важную миссию в истории человечества: путешествие за пределы нашей галактики, чтобы узнать, есть ли у человечества будущее среди звезд.',

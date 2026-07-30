@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class Movie extends Model
 {
-    protected $fillable = ['title', 'description', 'poster'];
+    protected $fillable = ['title', 'description', 'poster', 'user_id'];
 
     /**
      * Связь: Один фильм имеет много отзывов
