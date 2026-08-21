@@ -7,6 +7,13 @@
     <div class="py-12 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-200">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
+            <div class="mb-6 px-4 sm:px-0">
+                <a href="{{ route('movies.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-150 group">
+                    <span class="transform group-hover:-translate-x-1 transition duration-150">←</span> 
+                    <span>Назад в каталог фильмов</span>
+                </a>
+            </div>
+
             @if(session('success'))
                 <div class="mb-4 p-4 bg-green-50 dark:bg-green-950/50 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 rounded-lg text-sm">
                     {{ session('success') }}

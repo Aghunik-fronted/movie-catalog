@@ -7,6 +7,13 @@
     <div class="py-12 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-200">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
             
+            <div class="px-4 sm:px-0">
+                <a href="{{ route('movies.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-150 group">
+                    <span class="transform group-hover:-translate-x-1 transition duration-150">←</span> 
+                    <span>Назад к списку фильмов</span>
+                </a>
+            </div>
+            
             <!-- Информация о фильме -->
             <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm sm:rounded-lg p-6 flex flex-col md:flex-row gap-6 relative transition-colors duration-200">
                 @if($movie->poster)
@@ -106,7 +113,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="text-xs text-red-500 dark:text-red-400 hover:underline cursor-pointer">
-                                                Удалить
+                                                Удалить отзыв
                                             </button>
                                         </form>
                                     @endif
@@ -114,7 +121,7 @@
                             </div>
                         </div>
                     @empty
-                        <p class="text-gray-400 dark:text-gray-500 text-sm text-center py-4">Отзывов пока нет.</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm italic">Отзывов пока нет. Будьте первым, кто оставит своё мнение!</p>
                     @endforelse
                 </div>
             </div>

@@ -6,6 +6,14 @@
 @section('content')
     <div class="py-12 bg-gray-100 dark:bg-gray-900 min-h-screen text-gray-900 dark:text-gray-100 transition-colors duration-200">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+
+            <div class="mb-6 px-4 sm:px-0">
+                <a href="{{ route('movies.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-150 group">
+                    <span class="transform group-hover:-translate-x-1 transition duration-150">←</span> 
+                    <span>Назад к списку фильмов</span>
+                </a>
+            </div>
+
             <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 overflow-hidden shadow-sm sm:rounded-lg p-6 transition-colors duration-200">
                 
                 <form action="{{ route('movies.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">

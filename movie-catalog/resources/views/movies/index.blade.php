@@ -11,12 +11,24 @@
     <div class="py-12 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-200">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             
-            @auth
-                <div class="mb-6 flex justify-end">
-                    <a href="{{ route('movies.create') }}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition shadow-md">
-                        + Добавить новый фильм
+            @if(request()->routeIs('favorites.index'))
+                <div class="mb-6 px-4 sm:px-0">
+                    <a href="{{ route('movies.index') }}" class="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-150 group">
+                        <span class="transform group-hover:-translate-x-1 transition duration-150">←</span> 
+                        <span>Назад в общий каталог фильмов</span>
                     </a>
                 </div>
+            @endif
+            
+            @auth
+                <!-- Кнопка добавления фильма (прячется в избранном, чтобы не мешать) -->
+                @if(!request()->routeIs('favorites.index'))
+                    <div class="mb-6 flex justify-end">
+                        <a href="{{ route('movies.create') }}" class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest transition shadow-md">
+                            + Добавить новый фильм
+                        </a>
+                    </div>
+                @endif
             @endauth
 
             @if(request('search'))
