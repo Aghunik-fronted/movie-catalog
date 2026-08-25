@@ -32,8 +32,26 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            // Усиленная проверка email (валидация домена по RFC и DNS)
+            'email' => ['required', 'string', 'lowercase', 'email:rfc,dns', 'max:255', 'unique:'.User::class],
+            // Жесткие требования к паролю ради максимальной надежности
+            'password' => [
+                'required', 
+                'confirmed', 
+                Rules\Password::min(8) // Не менее 8 символов
+                    ->letters()        // Требовать буквы
+                    ->mixedCase()      // Требовать заглавные и строчные буквы
+                    ->numbers()        // Требовать цифры
+                    ->symbols()        // Требовать спецсимволы (!, @, #, $, %)
+            ],
+        ], [
+            'name.required' => 'Пожалуйста, введите ваше имя.',
+            'email.required' => 'Поле email является обязательным для заполнения.',
+            'email.email' => 'Пожалуйста, введите корректный и реально существующий адрес электронной почты.',
+            'email.unique' => 'Этот email-адрес уже зарегистрирован в системе КиноКаталога.',
+            'password.required' => 'Пожалуйста, задайте пароль для вашего аккаунта.',
+            'password.confirmed' => 'Введённые пароли не совпадают.',
+            'password' => 'Пароль слишком простой! Он должен содержать не менее 8 символов, включая заглавные и строчные буквы, цифры и спецсимволы (!, @, #, $, %).',
         ]);
 
         $user = User::create([
@@ -46,6 +64,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('movies.index', absolute: false));
     }
 }

@@ -73,7 +73,7 @@
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Ваша оценка</label>
                             <div class="flex flex-row-reverse justify-end items-center gap-1">
                                 @for($i = 5; $i >= 1; $i--)
-                                    <input type="radio" id="star{{ $i }}" name="rating" value="{{ $i }}" class="hidden peer" required {{ $i == 5 ? 'checked' : '' }}>
+                                    <input type="radio" id="star{{ $i }}" name="rating" value="{{ $i }}" class="hidden peer" required>
                                     <label for="star{{ $i }}" class="text-3xl text-gray-400 dark:text-gray-600 cursor-pointer hover:text-yellow-400 peer-hover:text-yellow-400 peer-checked:text-yellow-400 transition-colors duration-150">★</label>
                                 @endfor
                             </div>

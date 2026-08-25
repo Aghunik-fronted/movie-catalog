@@ -5,7 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <!-- Динамическое название вкладки браузера -->
         <title>@isset($title) {{ $title }} | @endisset {{ config('app.name', 'КиноКаталог') }}</title>
 
         <!-- Fonts -->
